@@ -16,7 +16,7 @@ const server = new ApolloServer({
   context: authMiddleware
 })
 
-server.applyMiddleware({app});
+
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -32,10 +32,19 @@ app.get('*', (req, res) => {
 
 app.use(routes);
 
-db.once('open', () => {
-  app.listen(PORT, () => console.log(`🌍 Now listening on localhost:${PORT}`));
-});
+
 
 process.on('uncaughtException', function(err) {
   console.log('Caught exception: ' + err);
 });
+
+const startapolloserver = async (typeDefs, resolvers) => {
+  await server.start()
+  server.applyMiddleware({app});
+
+  db.once('open', () => {
+    app.listen(PORT, () => console.log(`🌍 Now listening on localhost:${PORT}`));
+  });
+}
+
+startapolloserver()
